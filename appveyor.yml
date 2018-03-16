@@ -9,6 +9,8 @@ branches:
   
 skip_tags: true
 
+image: Visual Studio 2017
+
 configuration:
 - Release
 
@@ -32,18 +34,32 @@ install:
   - set PSYQ_SDK_URL="http://tomb5files.x10.mx/PSYQSDK.zip"
   - appveyor DownloadFile %PSYQ_SDK_URL% -FileName PSXSDK.zip
   - 7z x PSXSDK.zip -oC:\
+  - set SDL2_URL="https://www.libsdl.org/release/SDL2-devel-2.0.7-VC.zip"
+  - appveyor DownloadFile %SDL2_URL% -FileName SDL2.zip
+  - 7z x SDL2.zip -oC:\projects\TOMB5\EXTERNAL\
+  - set SDL2=C:\projects\TOMB5\EXTERNAL\SDL2-2.0.7
   
-build_script:
+before_build:
   - cmd: mkdir C:\TEMP
   - cmd: icacls "C:\psyq" /grant Users:F
   - cmd: icacls "C:\TEMP" /grant Users:F
   - cmd: mingw32-make
-  
+  - cmd: md BUILD
+  - cmd: cd BUILD
+  - cmd: if "%platform%"=="Win32" set CMAKE_GENERATOR_NAME=Visual Studio 15 2017
+  - cmd: if "%platform%"=="x64"   set CMAKE_GENERATOR_NAME=Visual Studio 15 2017 Win64
+  - cmd: cmake -G "%CMAKE_GENERATOR_NAME%" -DCMAKE_BUILD_TYPE=%configuration% -DDART_MSVC_DEFAULT_OPTIONS="%MSVC_DEFAULT_OPTIONS%" ..
+
 artifacts:
-   - path: DISC\*.zip
-     name: Binaries
-  
+   - path: DISC\TOMB5.zip
+     name: PSX_Binaries
+   - path: BUILD\SPEC_PSXPC\*.zip
+     name: PSXPC_Binaries
+
 after_build:
-  - 7z a DISC\TOMB5.zip "DISC\"
+   - cmd: cd SPEC_PSXPC
+   - cmd: copy "C:\projects\TOMB5\EXTERNAL\SDL2-2.0.7\lib\x86\SDL2.dll" "%configuration%\"
+   - 7z a DISC\TOMB5.zip "DISC\"
+   - 7z a TOMB5.zip "%configuration%\"
   
 #build: off
