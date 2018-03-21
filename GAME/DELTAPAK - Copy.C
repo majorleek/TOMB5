@@ -2806,8 +2806,45 @@ void cutseq_givelara_pistols()//2D2A0(<), 2D588(<) (F)
 	draw_pistol_meshes(WEAPON_PISTOLS);
 }
 
-void CalculateObjectLightingLaraCutSeq()
+void CalculateObjectLightingLaraCutSeq()//2D204(<), ?
 {
+	short room_no; // $s0
+	struct PHD_VECTOR pos; // stack offset -24
+
+	//a0 = &pos;
+	//a1 = 7;
+	GetLaraJointPos(&pos, 7);
+#if 0
+		sw	$zero, 0x30 + var_10($sp)
+		lw	$a0, 0x30 + var_18($sp)
+		lw	$a1, 0x30 + var_14($sp)
+		//v0 = lara_item;
+		lw	$a2, 0x30 + var_10($sp)
+		room_no = lara_item->room_number;
+	    //v1 = -1;
+		IsRoomOutsideNo = -1;
+		IsRoomOutside();
+		nop
+		lh	$v1, word_800A2208
+		li	$v0, 0xFFFFFFFF
+		beq	$v1, $v0, loc_2D270
+		move	$a3, $s0
+		move	$s0, $v1
+		move	$a3, $s0
+
+		loc_2D270 :
+	lw	$a0, 0x30 + var_18($sp)
+		lw	$a1, 0x30 + var_14($sp)
+		lw	$v0, dword_800A2048
+		lw	$a2, 0x30 + var_10($sp)
+		addiu	$v0, 0x54
+		jal	sub_85C68
+		sw	$v0, 0x30 + var_20($sp)
+		lw	$ra, 0x30 + var_4($sp)
+		lw	$s0, 0x30 + var_8($sp)
+		jr	$ra
+		addiu	$sp, 0x30
+#endif
 	S_Warn("[CalculateObjectLightingLaraCutSeq] - Unimplemented!\n");
 }
 
