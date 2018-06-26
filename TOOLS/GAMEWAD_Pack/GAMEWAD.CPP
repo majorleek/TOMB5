@@ -69,8 +69,8 @@ namespace TombRaiderChronicles
 				gameWad.entries[i].fileSize += gameWad.entries[NONE].fileSize;
 				writer.write(modData, gameWad.entries[NONE].fileSize);
 
-				gameWad.entries[i].fileSize = (gameWad.entries[i].fileSize + 0x7FF) & ~0x7FF;
-				writer.seek(((int)writer.m_pos + 0x7FF) & ~0x7FF);
+				gameWad.entries[i].fileSize = gameWad.entries[i].fileSize + (CD_SECTOR_SIZE-1) & ~(CD_SECTOR_SIZE-1);
+				writer.seek((int)writer.m_pos + (CD_SECTOR_SIZE - 1) & ~(CD_SECTOR_SIZE - 1));
 
 				sprintf_s(buf, "%s.PSX", gwFileNames[i]);
 				reader.open(buf);
@@ -82,13 +82,13 @@ namespace TombRaiderChronicles
 				writer.write(levelData, dataSize);
 				delete[] levelData;
 
-				gameWad.entries[i].fileSize = (gameWad.entries[i].fileSize + 0x7FF) & ~0x7FF;
-				writer.seek(((int)writer.m_pos + 0x7FF) & ~0x7FF);
+				gameWad.entries[i].fileSize = gameWad.entries[i].fileSize + (CD_SECTOR_SIZE-1) & ~(CD_SECTOR_SIZE-1);
+				writer.seek((int)writer.m_pos + (CD_SECTOR_SIZE-1) & ~(CD_SECTOR_SIZE-1));
 				reader.open("DATA\\CODE.WAD");
 				dataSize = (int)reader.m_length;
 				char* codeData = new char[dataSize];
 				reader.readRaw(codeData, dataSize);
-				gameWad.entries[i].fileSize += 0x6901C;
+				gameWad.entries[i].fileSize += dataSize;
 				reader.close();
 				writer.write(codeData, dataSize);
 				delete[] codeData;
@@ -140,10 +140,10 @@ namespace TombRaiderChronicles
 					reader.close();
 				}
 			}
-			currentOffset = (currentOffset + 0x7FF) & ~0x7FF;
+			currentOffset = currentOffset + (CD_SECTOR_SIZE-1) & ~(CD_SECTOR_SIZE-1);
 		}
 
-		sprintf(&gameWad.reserved[0], "TR5 DATA FILE (C) 2000 Core Design... 'gamewad.asm' Compiled by Del - %s %s", __DATE__, __TIME__);
+		sprintf(&gameWad.reserved[0], "TR5 DATA FILE (C) 2000 Core Design... 'gamewad.asm' Compiled by Del - %s %s.   this version built by Del, second attempt submission, 1/11/2000....        Hiya to Caroline and Abbie!                       lets hope we get to do a nice ONLINE game next... EVERQUEST RULES...                   ADSL ROCKS, when it works... someone really should kill BT , they suck.                                                        ", __TIME__, __DATE__);
 
 		writer.seek(0);
 		writer.write(&gameWad, sizeof(GAMEWAD_header));
